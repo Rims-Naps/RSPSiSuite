@@ -63,15 +63,15 @@ import com.rspsi.game.save.tile.state.HeightState;
 import com.rspsi.game.save.tile.state.ImportTileState;
 import com.rspsi.game.save.tile.state.OverlayState;
 import com.rspsi.game.save.tile.state.UnderlayState;
-import com.rspsi.misc.BrushType;
-import com.rspsi.misc.CopyOptions;
-import com.rspsi.misc.DeleteOptions;
-import com.rspsi.misc.ExportOptions;
-import com.rspsi.misc.JsonUtil;
-import com.rspsi.misc.Location;
-import com.rspsi.misc.TileArea;
-import com.rspsi.misc.ToolType;
-import com.rspsi.misc.Vector2;
+import com.rspsi.core.misc.BrushType;
+import com.rspsi.core.misc.CopyOptions;
+import com.rspsi.core.misc.DeleteOptions;
+import com.rspsi.core.misc.ExportOptions;
+import com.rspsi.core.misc.JsonUtil;
+import com.rspsi.core.misc.Location;
+import com.rspsi.core.misc.TileArea;
+import com.rspsi.core.misc.ToolType;
+import com.rspsi.core.misc.Vector2;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -4491,6 +4491,7 @@ public class SceneGraph {
 					if (tile != null) {
 						for (GameObject object : tile.gameObjects)
 							if (object != null) {
+								if(object.getX() == x && object.getY() == y)
 								objs.add(object);
 							}
 						if (tile.groundDecoration != null) {
@@ -4706,7 +4707,7 @@ public class SceneGraph {
 		this.offsetY = chunk.offsetY;
 	}
 
-	public byte getSelectedUnderlay() {
+	public short getSelectedUnderlay() {
 		int plane = Options.currentHeight.get();
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < length; y++) {
@@ -4722,7 +4723,7 @@ public class SceneGraph {
 		return -1;
 	}
 
-	public byte getSelectedOverlay() {
+	public short getSelectedOverlay() {
 		int plane = Options.currentHeight.get();
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < length; y++) {

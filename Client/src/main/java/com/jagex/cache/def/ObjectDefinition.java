@@ -1,6 +1,5 @@
 package com.jagex.cache.def;
 
-import org.displee.cache.index.Index;
 
 import java.util.Arrays;
 
@@ -11,8 +10,8 @@ import com.jagex.entity.model.Mesh;
 import com.jagex.entity.model.MeshLoader;
 import com.jagex.net.ResourceProvider;
 import com.rspsi.cache.CacheFileType;
-import com.rspsi.misc.FixedIntegerKeyMap;
-import com.rspsi.misc.FixedLongKeyMap;
+import com.rspsi.core.misc.FixedIntegerKeyMap;
+import com.rspsi.core.misc.FixedLongKeyMap;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -37,9 +36,6 @@ public final class ObjectDefinition {
 
 	private Sprite mapFunctionSprite, mapSceneSprite;
 
-	public void generateSprites(Index spriteIndex) {
-
-	}
 
 	private byte ambientLighting;
 	private int animation;

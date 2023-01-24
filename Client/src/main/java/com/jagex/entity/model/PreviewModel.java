@@ -14,9 +14,9 @@ public class PreviewModel extends Mesh {
 		boundingSphereRadius = (model.boundingSphereRadius);
 		boundingCylinderRadius = (model.boundingCylinderRadius);
 		anInt1654 = (model.anInt1654);
-		shadedFaceColoursX = copyArray(model.shadedFaceColoursX);
-		shadedFaceColoursY = copyArray(model.shadedFaceColoursY);
-		shadedFaceColoursZ = copyArray(model.shadedFaceColoursZ);
+		shadedtriangleColorsX = copyArray(model.shadedtriangleColorsX);
+		shadedtriangleColorsY = copyArray(model.shadedtriangleColorsY);
+		shadedtriangleColorsZ = copyArray(model.shadedtriangleColorsZ);
 		faceTransparencies = copyArray(model.faceTransparencies);
 		triangleColors = copyArray(model.triangleColors);
 		faceMaterial = copyArray(model.faceMaterial);

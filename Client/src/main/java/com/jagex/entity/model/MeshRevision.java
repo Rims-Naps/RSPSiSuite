@@ -1,5 +1,5 @@
 package com.jagex.entity.model;
 
 public enum MeshRevision {
-	OLD_FORMAT, TYPE_1, TYPE_2, TYPE_3
+	REVISION_317, REVISION_525, REVISION_622, REVISION_OSRS202_TYPE3, REVISION_OSRS202_TYPE2
 }

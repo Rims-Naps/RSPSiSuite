@@ -15,7 +15,7 @@ import com.jagex.draw.raster.GameRasterizer;
 import com.jagex.entity.Renderable;
 import com.jagex.util.Constants;
 import com.jagex.util.ObjectKey;
-import com.rspsi.misc.ToolType;
+import com.rspsi.core.misc.ToolType;
 import com.rspsi.options.Options;
 
 import lombok.Getter;
@@ -88,9 +88,9 @@ public class Mesh extends Renderable {
     public int boundingSphereRadius;
     public int boundingCylinderRadius;
     public int anInt1654;
-    public int[] shadedFaceColoursX;
-    public int[] shadedFaceColoursY;
-    public int[] shadedFaceColoursZ;
+    public int[] shadedtriangleColorsX;
+    public int[] shadedtriangleColorsY;
+    public int[] shadedtriangleColorsZ;
     public int[] faceTransparencies;
     public int[] triangleColors;
     public int[] faceMaterial;
@@ -137,14 +137,14 @@ public class Mesh extends Renderable {
         }
 
         if (delayShading) {
-            shadedFaceColoursX = new int[triangleCount];
-            shadedFaceColoursY = new int[triangleCount];
-            shadedFaceColoursZ = new int[triangleCount];
+            shadedtriangleColorsX = new int[triangleCount];
+            shadedtriangleColorsY = new int[triangleCount];
+            shadedtriangleColorsZ = new int[triangleCount];
 
             for (int k = 0; k < triangleCount; k++) {
-                shadedFaceColoursX[k] = model.shadedFaceColoursX[k];
-                shadedFaceColoursY[k] = model.shadedFaceColoursY[k];
-                shadedFaceColoursZ[k] = model.shadedFaceColoursZ[k];
+                shadedtriangleColorsX[k] = model.shadedtriangleColorsX[k];
+                shadedtriangleColorsY[k] = model.shadedtriangleColorsY[k];
+                shadedtriangleColorsZ[k] = model.shadedtriangleColorsZ[k];
             }
 
             triangleInfo = new int[triangleCount];
@@ -170,9 +170,9 @@ public class Mesh extends Renderable {
 
             normals = model.normals;
         } else {
-            shadedFaceColoursX = model.shadedFaceColoursX;
-            shadedFaceColoursY = model.shadedFaceColoursY;
-            shadedFaceColoursZ = model.shadedFaceColoursZ;
+            shadedtriangleColorsX = model.shadedtriangleColorsX;
+            shadedtriangleColorsY = model.shadedtriangleColorsY;
+            shadedtriangleColorsZ = model.shadedtriangleColorsZ;
             triangleInfo = model.triangleInfo;
         }
 
@@ -711,10 +711,10 @@ public class Mesh extends Renderable {
         int length = (int) Math.sqrt(x * x + y * y + z * z);
         int k1 = diffusion * length >> 8;
 
-        if (shadedFaceColoursX == null) {
-            shadedFaceColoursX = new int[triangleCount];
-            shadedFaceColoursY = new int[triangleCount];
-            shadedFaceColoursZ = new int[triangleCount];
+        if (shadedtriangleColorsX == null) {
+            shadedtriangleColorsX = new int[triangleCount];
+            shadedtriangleColorsY = new int[triangleCount];
+            shadedtriangleColorsZ = new int[triangleCount];
         }
 
         if (super.normals == null) {
@@ -771,7 +771,7 @@ public class Mesh extends Renderable {
                 normal.setMagnitude(normal.getMagnitude() + 1);
             } else {
                 int l5 = lighting + (x * dx + y * dy + z * dz) / (k1 + k1 / 2);
-                shadedFaceColoursX[face] = checkedLight(triangleColors[face], l5, triangleInfo[face]);
+                shadedtriangleColorsX[face] = checkedLight(triangleColors[face], l5, triangleInfo[face]);
             }
         }
 
@@ -847,9 +847,9 @@ public class Mesh extends Renderable {
         faceIndices1 = model.faceIndices1;
         faceIndices2 = model.faceIndices2;
         faceIndices3 = model.faceIndices3;
-        shadedFaceColoursX = model.shadedFaceColoursX;
-        shadedFaceColoursY = model.shadedFaceColoursY;
-        shadedFaceColoursZ = model.shadedFaceColoursZ;
+        shadedtriangleColorsX = model.shadedtriangleColorsX;
+        shadedtriangleColorsY = model.shadedtriangleColorsY;
+        shadedtriangleColorsZ = model.shadedtriangleColorsZ;
         texIndices1 = model.texIndices1;
         texIndices2 = model.texIndices2;
         texIndices3 = model.texIndices3;
@@ -1091,9 +1091,9 @@ public class Mesh extends Renderable {
 
         if (type == 0 && !ignoreTextures) {
             rasterizer.drawShadedTriangle(rasterizer.vertexScreenY[faceX], rasterizer.vertexScreenY[faceY], rasterizer.vertexScreenY[faceZ], rasterizer.vertexScreenX[faceX],
-                    rasterizer.vertexScreenX[faceY], rasterizer.vertexScreenX[faceZ], shadedFaceColoursX[index], shadedFaceColoursY[index], shadedFaceColoursZ[index]);
+                    rasterizer.vertexScreenX[faceY], rasterizer.vertexScreenX[faceZ], shadedtriangleColorsX[index], shadedtriangleColorsY[index], shadedtriangleColorsZ[index]);
         } else if (type == 1 || ignoreTextures) {
-            int colour = selected ? 0xc5dce6 : translucent ? 16118771 : rasterizer.colourPalette[shadedFaceColoursX[index]];
+            int colour = selected ? 0xc5dce6 : translucent ? 16118771 : rasterizer.colourPalette[shadedtriangleColorsX[index]];
             rasterizer.drawShadedTriangle(rasterizer.vertexScreenY[faceX], rasterizer.vertexScreenY[faceY], rasterizer.vertexScreenY[faceZ], rasterizer.vertexScreenX[faceX],
                     rasterizer.vertexScreenX[faceY], rasterizer.vertexScreenX[faceZ], colour);
         } else if (type == 2 || type == 3) {
@@ -1118,13 +1118,13 @@ public class Mesh extends Renderable {
                     texFaceZ = faceZ;
                 }
 
-                int colourX = shadedFaceColoursX[index];
-                int colourY = shadedFaceColoursX[index];
-                int colourZ = shadedFaceColoursX[index];
+                int colourX = shadedtriangleColorsX[index];
+                int colourY = shadedtriangleColorsX[index];
+                int colourZ = shadedtriangleColorsX[index];
 
                 if (type == 2) {
-                    colourY = shadedFaceColoursY[index];
-                    colourZ = shadedFaceColoursZ[index];
+                    colourY = shadedtriangleColorsY[index];
+                    colourZ = shadedtriangleColorsZ[index];
                 }
 
                 int texId = faceMaterial[index];
@@ -1170,64 +1170,64 @@ public class Mesh extends Renderable {
         if (l1 >= 50) {
             rasterizer.anIntArray1678[l] = rasterizer.vertexScreenX[faceX];
             rasterizer.anIntArray1679[l] = rasterizer.vertexScreenY[faceX];
-            rasterizer.anIntArray1680[l++] = shadedFaceColoursX[index];
+            rasterizer.anIntArray1680[l++] = shadedtriangleColorsX[index];
         } else {
             int k2 = rasterizer.camera_vertex_x[faceX];
             int k3 = rasterizer.camera_vertex_y[faceX];
-            int k4 = shadedFaceColoursX[index];
+            int k4 = shadedtriangleColorsX[index];
             if (j2 >= 50) {
                 int k5 = (50 - l1) * Constants.LIGHT_DECAY[j2 - l1];
                 rasterizer.anIntArray1678[l] = viewX + (k2 + ((rasterizer.camera_vertex_x[faceZ] - k2) * k5 >> 16) << 9) / 50;
                 rasterizer.anIntArray1679[l] = viewY + (k3 + ((rasterizer.camera_vertex_y[faceZ] - k3) * k5 >> 16) << 9) / 50;
-                rasterizer.anIntArray1680[l++] = k4 + ((shadedFaceColoursZ[index] - k4) * k5 >> 16);
+                rasterizer.anIntArray1680[l++] = k4 + ((shadedtriangleColorsZ[index] - k4) * k5 >> 16);
             }
             if (i2 >= 50) {
                 int l5 = (50 - l1) * Constants.LIGHT_DECAY[i2 - l1];
                 rasterizer.anIntArray1678[l] = viewX + (k2 + ((rasterizer.camera_vertex_x[faceY] - k2) * l5 >> 16) << 9) / 50;
                 rasterizer.anIntArray1679[l] = viewY + (k3 + ((rasterizer.camera_vertex_y[faceY] - k3) * l5 >> 16) << 9) / 50;
-                rasterizer.anIntArray1680[l++] = k4 + ((shadedFaceColoursY[index] - k4) * l5 >> 16);
+                rasterizer.anIntArray1680[l++] = k4 + ((shadedtriangleColorsY[index] - k4) * l5 >> 16);
             }
         }
         if (i2 >= 50) {
             rasterizer.anIntArray1678[l] = rasterizer.vertexScreenX[faceY];
             rasterizer.anIntArray1679[l] = rasterizer.vertexScreenY[faceY];
-            rasterizer.anIntArray1680[l++] = shadedFaceColoursY[index];
+            rasterizer.anIntArray1680[l++] = shadedtriangleColorsY[index];
         } else {
             int l2 = rasterizer.camera_vertex_x[faceY];
             int l3 = rasterizer.camera_vertex_y[faceY];
-            int l4 = shadedFaceColoursY[index];
+            int l4 = shadedtriangleColorsY[index];
             if (l1 >= 50) {
                 int i6 = (50 - i2) * Constants.LIGHT_DECAY[l1 - i2];
                 rasterizer.anIntArray1678[l] = viewX + (l2 + ((rasterizer.camera_vertex_x[faceX] - l2) * i6 >> 16) << 9) / 50;
                 rasterizer.anIntArray1679[l] = viewY + (l3 + ((rasterizer.camera_vertex_y[faceX] - l3) * i6 >> 16) << 9) / 50;
-                rasterizer.anIntArray1680[l++] = l4 + ((shadedFaceColoursX[index] - l4) * i6 >> 16);
+                rasterizer.anIntArray1680[l++] = l4 + ((shadedtriangleColorsX[index] - l4) * i6 >> 16);
             }
             if (j2 >= 50) {
                 int j6 = (50 - i2) * Constants.LIGHT_DECAY[j2 - i2];
                 rasterizer.anIntArray1678[l] = viewX + (l2 + ((rasterizer.camera_vertex_x[faceZ] - l2) * j6 >> 16) << 9) / 50;
                 rasterizer.anIntArray1679[l] = viewY + (l3 + ((rasterizer.camera_vertex_y[faceZ] - l3) * j6 >> 16) << 9) / 50;
-                rasterizer.anIntArray1680[l++] = l4 + ((shadedFaceColoursZ[index] - l4) * j6 >> 16);
+                rasterizer.anIntArray1680[l++] = l4 + ((shadedtriangleColorsZ[index] - l4) * j6 >> 16);
             }
         }
         if (j2 >= 50) {
             rasterizer.anIntArray1678[l] = rasterizer.vertexScreenX[faceZ];
             rasterizer.anIntArray1679[l] = rasterizer.vertexScreenY[faceZ];
-            rasterizer.anIntArray1680[l++] = shadedFaceColoursZ[index];
+            rasterizer.anIntArray1680[l++] = shadedtriangleColorsZ[index];
         } else {
             int i3 = rasterizer.camera_vertex_x[faceZ];
             int i4 = rasterizer.camera_vertex_y[faceZ];
-            int i5 = shadedFaceColoursZ[index];
+            int i5 = shadedtriangleColorsZ[index];
             if (i2 >= 50) {
                 int k6 = (50 - j2) * Constants.LIGHT_DECAY[i2 - j2];
                 rasterizer.anIntArray1678[l] = viewX + (i3 + ((rasterizer.camera_vertex_x[faceY] - i3) * k6 >> 16) << 9) / 50;
                 rasterizer.anIntArray1679[l] = viewY + (i4 + ((rasterizer.camera_vertex_y[faceY] - i4) * k6 >> 16) << 9) / 50;
-                rasterizer.anIntArray1680[l++] = i5 + ((shadedFaceColoursY[index] - i5) * k6 >> 16);
+                rasterizer.anIntArray1680[l++] = i5 + ((shadedtriangleColorsY[index] - i5) * k6 >> 16);
             }
             if (l1 >= 50) {
                 int l6 = (50 - j2) * Constants.LIGHT_DECAY[l1 - j2];
                 rasterizer.anIntArray1678[l] = viewX + (i3 + ((rasterizer.camera_vertex_x[faceX] - i3) * l6 >> 16) << 9) / 50;
                 rasterizer.anIntArray1679[l] = viewY + (i4 + ((rasterizer.camera_vertex_y[faceX] - i4) * l6 >> 16) << 9) / 50;
-                rasterizer.anIntArray1680[l++] = i5 + ((shadedFaceColoursX[index] - i5) * l6 >> 16);
+                rasterizer.anIntArray1680[l++] = i5 + ((shadedtriangleColorsX[index] - i5) * l6 >> 16);
             }
         }
         int j3 = rasterizer.anIntArray1678[0];
@@ -1255,7 +1255,7 @@ public class Mesh extends Renderable {
                             rasterizer.anIntArray1680[2]);
                 } else if (type == 1 || ignoreTextures) {
                     rasterizer.drawShadedTriangle(i7, j7, k7, j3, j4, j5,
-                            selected ? 0xc5dce6 : translucent ? 16118771 : rasterizer.colourPalette[shadedFaceColoursX[index]]);
+                            selected ? 0xc5dce6 : translucent ? 16118771 : rasterizer.colourPalette[shadedtriangleColorsX[index]]);
                 } else if (type == 2) {
                     int texFaceX, texFaceY, texFaceZ;
                     if (faceTexture != null && faceTexture[index] != -1) {
@@ -1300,8 +1300,8 @@ public class Mesh extends Renderable {
                         texFaceZ = faceZ;
                     }
 
-                    rasterizer.drawTexturedTriangle(i7, j7, k7, j3, j4, j5, shadedFaceColoursX[index], shadedFaceColoursX[index],
-                            shadedFaceColoursX[index], rasterizer.camera_vertex_x[texFaceX], rasterizer.camera_vertex_x[texFaceY], rasterizer.camera_vertex_x[texFaceZ],
+                    rasterizer.drawTexturedTriangle(i7, j7, k7, j3, j4, j5, shadedtriangleColorsX[index], shadedtriangleColorsX[index],
+                            shadedtriangleColorsX[index], rasterizer.camera_vertex_x[texFaceX], rasterizer.camera_vertex_x[texFaceY], rasterizer.camera_vertex_x[texFaceZ],
                             rasterizer.camera_vertex_y[texFaceX], rasterizer.camera_vertex_y[texFaceY], rasterizer.camera_vertex_y[texFaceZ], rasterizer.camera_vertex_z[texFaceX],
                             rasterizer.camera_vertex_z[texFaceY], rasterizer.camera_vertex_z[texFaceZ], faceMaterial[index]);
                 }
@@ -1324,7 +1324,7 @@ public class Mesh extends Renderable {
                             rasterizer.anIntArray1680[0], rasterizer.anIntArray1680[2], rasterizer.anIntArray1680[3]);
                     return;
                 } else if (type == 1 || ignoreTextures) {
-                    int l8 = selected ? 0xc5dce6 : translucent ? 16118771 : rasterizer.colourPalette[shadedFaceColoursX[index]];
+                    int l8 = selected ? 0xc5dce6 : translucent ? 16118771 : rasterizer.colourPalette[shadedtriangleColorsX[index]];
                     rasterizer.drawShadedTriangle(i7, j7, k7, j3, j4, j5, l8);
                     rasterizer.drawShadedTriangle(i7, k7, rasterizer.anIntArray1679[3], j3, j5, rasterizer.anIntArray1678[3], l8);
                     return;
@@ -1378,12 +1378,12 @@ public class Mesh extends Renderable {
                         texFaceZ = faceZ;
                     }
 
-                    rasterizer.drawTexturedTriangle(i7, j7, k7, j3, j4, j5, shadedFaceColoursX[index], shadedFaceColoursX[index],
-                            shadedFaceColoursX[index], rasterizer.camera_vertex_x[texFaceX], rasterizer.camera_vertex_x[texFaceY], rasterizer.camera_vertex_x[texFaceZ],
+                    rasterizer.drawTexturedTriangle(i7, j7, k7, j3, j4, j5, shadedtriangleColorsX[index], shadedtriangleColorsX[index],
+                            shadedtriangleColorsX[index], rasterizer.camera_vertex_x[texFaceX], rasterizer.camera_vertex_x[texFaceY], rasterizer.camera_vertex_x[texFaceZ],
                             rasterizer.camera_vertex_y[texFaceX], rasterizer.camera_vertex_y[texFaceY], rasterizer.camera_vertex_y[texFaceZ], rasterizer.camera_vertex_z[texFaceX],
                             rasterizer.camera_vertex_z[texFaceY], rasterizer.camera_vertex_z[texFaceZ], faceMaterial[index]);
                     rasterizer.drawTexturedTriangle(i7, k7, rasterizer.anIntArray1679[3], j3, j5, rasterizer.anIntArray1678[3],
-                            shadedFaceColoursX[index], shadedFaceColoursX[index], shadedFaceColoursX[index], rasterizer.camera_vertex_x[texFaceX],
+                            shadedtriangleColorsX[index], shadedtriangleColorsX[index], shadedtriangleColorsX[index], rasterizer.camera_vertex_x[texFaceX],
                             rasterizer.camera_vertex_x[texFaceY], rasterizer.camera_vertex_x[texFaceZ], rasterizer.camera_vertex_y[texFaceX], rasterizer.camera_vertex_y[texFaceY],
                             rasterizer.camera_vertex_y[texFaceZ], rasterizer.camera_vertex_z[texFaceX], rasterizer.camera_vertex_z[texFaceY], rasterizer.camera_vertex_z[texFaceZ],
                             faceMaterial[index]);
@@ -1693,17 +1693,17 @@ public class Mesh extends Renderable {
 
                 int light = lighting
                         + (x * normal.getX() + y * normal.getY() + z * normal.getZ()) / (j * normal.getMagnitude());
-                shadedFaceColoursX[face] = checkedLight(colour, light, 0);
+                shadedtriangleColorsX[face] = checkedLight(colour, light, 0);
 
                 normal = super.normals[indexY];
                 light = lighting
                         + (x * normal.getX() + y * normal.getY() + z * normal.getZ()) / (j * normal.getMagnitude());
-                shadedFaceColoursY[face] = checkedLight(colour, light, 0);
+                shadedtriangleColorsY[face] = checkedLight(colour, light, 0);
 
                 normal = super.normals[indexZ];
                 light = lighting
                         + (x * normal.getX() + y * normal.getY() + z * normal.getZ()) / (j * normal.getMagnitude());
-                shadedFaceColoursZ[face] = checkedLight(colour, light, 0);
+                shadedtriangleColorsZ[face] = checkedLight(colour, light, 0);
             } else if ((triangleInfo[face] & 1) == 0) {
                 int colour = triangleColors[face];
                 int point = triangleInfo[face];
@@ -1711,17 +1711,17 @@ public class Mesh extends Renderable {
                 VertexNormal normal = super.normals[indexX];
                 int light = lighting
                         + (x * normal.getX() + y * normal.getY() + z * normal.getZ()) / (j * normal.getMagnitude());
-                shadedFaceColoursX[face] = checkedLight(colour, light, point);
+                shadedtriangleColorsX[face] = checkedLight(colour, light, point);
                 normal = super.normals[indexY];
 
                 light = lighting
                         + (x * normal.getX() + y * normal.getY() + z * normal.getZ()) / (j * normal.getMagnitude());
-                shadedFaceColoursY[face] = checkedLight(colour, light, point);
+                shadedtriangleColorsY[face] = checkedLight(colour, light, point);
                 normal = super.normals[indexZ];
 
                 light = lighting
                         + (x * normal.getX() + y * normal.getY() + z * normal.getZ()) / (j * normal.getMagnitude());
-                shadedFaceColoursZ[face] = checkedLight(colour, light, point);
+                shadedtriangleColorsZ[face] = checkedLight(colour, light, point);
             }
         }
 
@@ -1991,9 +1991,9 @@ public class Mesh extends Renderable {
         mesh.boundingSphereRadius = (model.boundingSphereRadius);
         mesh.boundingCylinderRadius = (model.boundingCylinderRadius);
         mesh.anInt1654 = (model.anInt1654);
-        mesh.shadedFaceColoursX = copyArray(model.shadedFaceColoursX);
-        mesh.shadedFaceColoursY = copyArray(model.shadedFaceColoursY);
-        mesh.shadedFaceColoursZ = copyArray(model.shadedFaceColoursZ);
+        mesh.shadedtriangleColorsX = copyArray(model.shadedtriangleColorsX);
+        mesh.shadedtriangleColorsY = copyArray(model.shadedtriangleColorsY);
+        mesh.shadedtriangleColorsZ = copyArray(model.shadedtriangleColorsZ);
         mesh.faceTransparencies = copyArray(model.faceTransparencies);
         mesh.triangleColors = copyArray(model.triangleColors);
         mesh.faceMaterial = copyArray(model.faceMaterial);
