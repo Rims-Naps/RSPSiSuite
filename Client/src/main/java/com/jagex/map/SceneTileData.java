@@ -4,13 +4,14 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import com.jagex.map.tile.SceneTile;
-import com.rspsi.core.misc.CopyOptions;
-import com.rspsi.core.misc.ExportOptions;
-import com.rspsi.core.misc.Location;
+import com.rspsi.misc.CopyOptions;
+import com.rspsi.misc.ExportOptions;
+import com.rspsi.misc.Location;
 
 public class SceneTileData {
 
-	private short overlayId = -1, underlayId = -1;
+	private short overlayId = -1;
+	private short underlayId = -1;
 	private byte overlayOrientation = -1, overlayType = -1;
 
 	private int tileHeight = -1;

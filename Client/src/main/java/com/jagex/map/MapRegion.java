@@ -146,7 +146,7 @@ public final class MapRegion {
 		int id = -1;
 
 		while (true) {
-			int offset = buffer.readUSmartInt();
+			int offset = buffer.getUIncrementalSmart();
 			if (offset == 0)
 				return ready;
 
@@ -157,14 +157,14 @@ public final class MapRegion {
 			while (true) {
 				int terminate;
 				if (skip) {
-					terminate = buffer.readUSmart();
+					terminate = buffer.get_unsignedsmart_byteorshort();
 					if (terminate == 0) {
 						break;
 					}
 
 					buffer.readUByte();
 				} else {
-					terminate = buffer.readUSmart();
+					terminate = buffer.get_unsignedsmart_byteorshort();
 					if (terminate == 0) {
 						break;
 					}
@@ -196,7 +196,7 @@ public final class MapRegion {
 		int id = -1;
 
 		while (true) {
-			int offset = buffer.readUSmartInt();
+			int offset = buffer.getUIncrementalSmart();
 			if (offset == 0)
 				return ready;
 
@@ -207,14 +207,14 @@ public final class MapRegion {
 			while (true) {
 				int terminate;
 				if (skip) {
-					terminate = buffer.readUSmart();
+					terminate = buffer.get_unsignedsmart_byteorshort();
 					if (terminate == 0) {
 						break;
 					}
 
 					buffer.readUByte();
 				} else {
-					terminate = buffer.readUSmart();
+					terminate = buffer.get_unsignedsmart_byteorshort();
 					if (terminate == 0) {
 						break;
 					}
@@ -329,7 +329,7 @@ public final class MapRegion {
 			Buffer buffer = new Buffer(data);
 			int id = -1;
 			do {
-				int idOffset = buffer.readUSmartInt();
+				int idOffset = buffer.getUIncrementalSmart();
 				if (idOffset == 0) {
 					break decoding;
 				}
@@ -338,7 +338,7 @@ public final class MapRegion {
 				int config = 0;
 
 				do {
-					int offset = buffer.readUSmartInt();
+					int offset = buffer.get_unsignedsmart_byteorshort();
 					if (offset == 0) {
 						break;
 					}
@@ -376,20 +376,14 @@ public final class MapRegion {
 	public final void decodeConstructedMapData(byte[] data, int plane, int topLeftRegionX, int topLeftRegionY,
 			int tileZ, int minX, int minY, int rotation) {
 		Buffer buffer = new Buffer(data);
-		final int position = buffer.position;
-		try {
-
-		} catch (Exception ignored) {
-			buffer.position = position;
-			for (int z = 0; z < 4; z++) {
-				for (int x = 0; x < 64; x++) {
-					for (int y = 0; y < 64; y++) {
-						if (z == plane && x >= minX && x < minX + 8 && y >= minY && y < minY + 8) {
-							decodeOldMapData(buffer, topLeftRegionX + TileUtils.getXOffset(x & 7, y & 7, rotation),
-									topLeftRegionY + TileUtils.getYOffset(x & 7, y & 7, rotation), tileZ, 0, 0, rotation);
-						} else {
-							decodeOldMapData(buffer, -1, -1, 0, 0, 0, 0);
-						}
+		for (int z = 0; z < 4; z++) {
+			for (int x = 0; x < 64; x++) {
+				for (int y = 0; y < 64; y++) {
+					if (z == plane && x >= minX && x < minX + 8 && y >= minY && y < minY + 8) {
+						decodeMapData(buffer, topLeftRegionX + TileUtils.getXOffset(x & 7, y & 7, rotation),
+								topLeftRegionY + TileUtils.getYOffset(x & 7, y & 7, rotation), tileZ, 0, 0, rotation);
+					} else {
+						decodeMapData(buffer, -1, -1, 0, 0, 0, 0);
 					}
 				}
 			}
@@ -436,7 +430,7 @@ public final class MapRegion {
 			int id = -1;
 
 			do {
-				int idOffset = buffer.readUSmartInt();
+				int idOffset = buffer.getUIncrementalSmart();
 				if (idOffset == 0) {
 					break decoding;
 				}
@@ -445,7 +439,7 @@ public final class MapRegion {
 				int position = 0;
 
 				do {
-					int offset = buffer.readUSmartInt();
+					int offset = buffer.get_unsignedsmart_byteorshort();
 					if (offset == 0) {
 						break;
 					}
@@ -477,66 +471,6 @@ public final class MapRegion {
 		}
 	}
 
-	public final void decodeOldMapData(Buffer buffer, int x, int y, int z, int regionX, int regionY, int orientation) {// XXX
-		if (x >= 0 && x < width && y >= 0 && y < length) {
-			tileFlags[z][x][y] = 0;
-			manualTileHeight[z][x][y] = 0;
-			tileHeights[z][x][y] = 0;
-			overlays[z][x][y] = 0;
-			overlayShapes[z][x][y] = 0;
-			overlayOrientations[z][x][y] = 0;
-			underlays[z][x][y] = 0;
-			do {
-				int type = buffer.readUByte();
-
-				if (type == 0) {
-					manualTileHeight[z][x][y] = 0;
-					if (z == 0) {
-						tileHeights[0][x][y] = -calculateHeight(0xe3b7b + x + regionX, 0x87cce + y + regionY) * 8;
-					} else {
-						tileHeights[z][x][y] = tileHeights[z - 1][x][y] - 240;
-					}
-
-					return;
-				} else if (type == 1) {
-					manualTileHeight[z][x][y] = 1;
-					int height = buffer.readUByte();
-					if (height == 1) {
-						height = 0;
-					}
-					if (z == 0) {
-						tileHeights[0][x][y] = -height * 8;
-					} else {
-						tileHeights[z][x][y] = tileHeights[z - 1][x][y] - height * 8;
-					}
-
-					return;
-				} else if (type <= 49) {
-					overlays[z][x][y] = buffer.readByte();
-					overlayShapes[z][x][y] = (byte) ((type - 2) / 4);
-					overlayOrientations[z][x][y] = (byte) (type - 2 + orientation & 3);
-				} else if (type <= 81) {
-					tileFlags[z][x][y] = (byte) (type - 49);
-				} else {
-					underlays[z][x][y] = (byte) (type - 81);
-				}
-			} while (true);
-		}
-
-		do {
-			int in = buffer.readUByte();
-			if (in == 0) {
-				break;
-			} else if (in == 1) {
-				buffer.readUByte();
-				return;
-			} else if (in <= 49) {
-				buffer.readUByte();
-			}
-		} while (true);
-	}
-
-
 	public final void decodeMapData(Buffer buffer, int x, int y, int z, int regionX, int regionY, int orientation) {// XXX
 		if (x >= 0 && x < width && y >= 0 && y < length) {
 			tileFlags[z][x][y] = 0;
@@ -566,7 +500,7 @@ public final class MapRegion {
 
 					return;
 				} else if (type <= 49) {
-					overlays[z][x][y] = (short) buffer.readShort();
+					overlays[z][x][y] = (short) buffer.get_short();
 					overlayShapes[z][x][y] = (byte) ((type - 2) / 4);
 					overlayOrientations[z][x][y] = (byte) (type - 2 + orientation & 3);
 				} else if (type <= 81) {
@@ -578,14 +512,14 @@ public final class MapRegion {
 		}
 
 		do {
-			int in = buffer.readUShort();
+			int in = buffer.readUByte();
 			if (in == 0) {
 				break;
 			} else if (in == 1) {
 				buffer.readUByte();
 				return;
 			} else if (in <= 49) {
-				buffer.readUShort();
+				buffer.get_short();
 			}
 		} while (true);
 	}
@@ -593,23 +527,11 @@ public final class MapRegion {
 	public final void unpackTiles(byte[] data, int dX, int dY, int regionX, int regionY) {
 
 		Buffer buffer = new Buffer(data);
-		final int position = buffer.position;
+		for (int z = 0; z < 4; z++) {
+			for (int localX = 0; localX < 64; localX++) {
+				for (int localY = 0; localY < 64; localY++) {
+					decodeMapData(buffer, localX + dX, localY + dY, z, regionX, regionY, 0);
 
-		try {
-			for (int z = 0; z < 4; z++) {
-				for (int localX = 0; localX < 64; localX++) {
-					for (int localY = 0; localY < 64; localY++) {
-						decodeMapData(buffer, localX + dX, localY + dY, z, regionX, regionY, 0);
-					}
-				}
-			}
-		} catch (Exception ignored) {
-			buffer.position = position;
-			for (int z = 0; z < 4; z++) {
-				for (int localX = 0; localX < 64; localX++) {
-					for (int localY = 0; localY < 64; localY++) {
-						decodeOldMapData(buffer, localX + dX, localY + dY, z, regionX, regionY, 0);
-					}
 				}
 			}
 		}
@@ -678,7 +600,7 @@ public final class MapRegion {
 				for (int y = 0; y < length; y++) {
 					int maxX = centreX + 5;
 					if (maxX >= 0 && maxX < width) {
-						int id = underlays[z][maxX][y] & 0xff;
+						int id = underlays[z][maxX][y] & 0x3FFF;
 
 						if (id > 0) {
 							Floor floor = FloorDefinitionLoader.getUnderlay(id - 1);
@@ -694,7 +616,7 @@ public final class MapRegion {
 
 					int minX = centreX - 5;
 					if (minX >= 0 && minX < width) {
-						int id = underlays[z][minX][y] & 0xff;
+						int id = underlays[z][minX][y] & 0x3FFF;
 
 						if (id > 0) {
 							Floor floor = FloorDefinitionLoader.getUnderlay(id - 1);
@@ -745,8 +667,8 @@ public final class MapRegion {
 								maximumPlane = z;
 							}
 
-							int underlay = underlays[z][centreX][centreY] & 0xff;
-							int overlayFloorId = overlays[z][centreX][centreY] & 0xff;
+							int underlay = underlays[z][centreX][centreY] & 0x3FFF;
+							int overlayFloorId = overlays[z][centreX][centreY] & 0x3FFF;
 
 							if (underlay > 0 || overlayFloorId > 0) {
 								int centreHeight = tileHeights[z][centreX][centreY];
@@ -1192,24 +1114,24 @@ public final class MapRegion {
 
 	private void save_terrain_tile(int y, int x, int z, Buffer buffer) {
 		if (overlays[y][x][z] != 0) {
-			buffer.writeShort(overlayShapes[y][x][z] * 4 + (overlayOrientations[y][x][z] & 3) + 2);
+			buffer.writeByte(overlayShapes[y][x][z] * 4 + (overlayOrientations[y][x][z] & 3) + 2);
 			buffer.writeShort(overlays[y][x][z]);
 		}
 		if (tileFlags[y][x][z] != 0) {
-			buffer.writeShort(tileFlags[y][x][z] + 49);
+			buffer.writeByte(tileFlags[y][x][z] + 49);
 		}
 		if (underlays[y][x][z] != 0) {
 			buffer.writeShort(underlays[y][x][z] + 81);
 		}
 		if (manualTileHeight[y][x][z] == 1 || y == 0) {
-			buffer.writeShort(1);
+			buffer.writeByte(1);
 			if (y == 0) {
 				buffer.writeByte(-tileHeights[y][x][z] / 8);
 			} else {
 				buffer.writeByte(-(tileHeights[y][x][z] - tileHeights[y - 1][x][z]) / 8);
 			}
 		} else {
-			buffer.writeShort(0);
+			buffer.writeByte(0);
 		}
 	}
 
@@ -1608,7 +1530,7 @@ public final class MapRegion {
 					for (int y = 0; y < length; y++) {
 						int maxX = centreX + 5;
 						if (maxX >= 0 && maxX < width) {
-							int id = underlays[z][maxX][y] & 0xff;
+							int id = underlays[z][maxX][y] & 0x3FFF;
 
 							if (id > 0) {
 								Floor floor = FloorDefinitionLoader.getUnderlay(id - 1);
@@ -1624,7 +1546,7 @@ public final class MapRegion {
 
 						int minX = centreX - 5;
 						if (minX >= 0 && minX < width) {
-							int id = underlays[z][minX][y] & 0xff;
+							int id = underlays[z][minX][y] & 0x3FFF;
 
 							if (id > 0) {
 								Floor floor = FloorDefinitionLoader.getUnderlay(id - 1);
@@ -1676,8 +1598,8 @@ public final class MapRegion {
 									maximumPlane = z;
 								}
 
-								int underlay = underlays[z][centreX][centreY] & 0xff;
-								int overlayFloorId = overlays[z][centreX][centreY] & 0xff;
+								int underlay = underlays[z][centreX][centreY] & 0x3FFF;
+								int overlayFloorId = overlays[z][centreX][centreY] & 0x3FFF;
 
 								/*
 								 * boolean hiddenHL = showHiddenTiles && z == Options.currentHeight.get(); if
@@ -1748,7 +1670,7 @@ public final class MapRegion {
 												int saturation = floor.getSaturation();
 												int luminance = floor.getLuminance();
 												hsl_bitset_unmodified = ColourUtils.toHsl(hue, saturation, luminance);
-												hue = hue + hueOffset & 0xff;
+												hue = hue + hueOffset & 0x3FFF;
 												luminance += luminanceOffset;
 
 												if (luminance < 0) {
@@ -2060,7 +1982,7 @@ public final class MapRegion {
 					for (int y = 0; y < length; y++) {
 						int maxX = centreX + 5;
 						if (maxX >= 0 && maxX < width) {
-							int id = underlays[z][maxX][y] & 0xff;
+							int id = underlays[z][maxX][y] & 0x3FFF;
 
 							if (id > 0) {
 								Floor floor = FloorDefinitionLoader.getUnderlay(id - 1);
@@ -2074,7 +1996,7 @@ public final class MapRegion {
 
 						int minX = centreX - 5;
 						if (minX >= 0 && minX < width) {
-							int id = underlays[z][minX][y] & 0xff;
+							int id = underlays[z][minX][y] & 0x3FFF;
 
 							if (id > 0) {
 								Floor floor = FloorDefinitionLoader.getUnderlay(id - 1);
@@ -2118,8 +2040,8 @@ public final class MapRegion {
 									maximumPlane = z;
 								}
 
-								int underlay = underlays[z][centreX][centreY] & 0xff;
-								int overlayFloorId = overlays[z][centreX][centreY] & 0xff;
+								int underlay = underlays[z][centreX][centreY] & 0x3FFF;
+								int overlayFloorId = overlays[z][centreX][centreY] & 0x3FFF;
 
 								if (underlay > 0 || overlayFloorId > 0) {
 									int centreHeight = tileHeights[z][centreX][centreY];
@@ -2165,7 +2087,7 @@ public final class MapRegion {
 												int saturation = floor.getSaturation();
 												int luminance = floor.getLuminance();
 												hsl_bitset_unmodified = ColourUtils.toHsl(hue, saturation, luminance);
-												hue = hue + hueOffset & 0xff;
+												hue = hue + hueOffset & 0x3FFF;
 												luminance += luminanceOffset;
 
 												if (luminance < 0) {
