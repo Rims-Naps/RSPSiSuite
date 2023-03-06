@@ -4,6 +4,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 
 import com.jfoenix.controls.JFXButton;
+import com.rspsi.tools.StepsBuilder;
 import com.rspsi.util.Settings;
 import javafx.scene.control.*;
 import org.major.map.RenderFlags;
@@ -355,9 +356,12 @@ public class MainController {
 
 	@FXML
 	private MenuItem setRelativeHeight;
-	
+
 	@FXML
 	private MenuItem generateBridgeBtn;
+
+	@FXML
+	private MenuItem generateStairsBtn;
 	
 	@FXML
 	private VBox root;
@@ -622,12 +626,20 @@ public class MainController {
 		Options.currentHeight.bind(currentHeightSpinner.valueProperty());
 
 		Options.simulateBridgesProperty.bindBidirectional(simulateBridges.selectedProperty());
-		
+
 		generateBridgeBtn.setOnAction(evt -> {
 			try {
 				BridgeBuilder.buildBridge();
 			} catch (Exception e) {
 				FXDialogs.showError(application.getStage().getOwner(),"Error while generating bridge!", "Message: " + e.getMessage());
+			}
+		});
+
+		generateStairsBtn.setOnAction(evt -> {
+			try {
+				StepsBuilder.buildStairs();
+			} catch (Exception e) {
+				FXDialogs.showError(application.getStage().getOwner(),"Error while generating stairs!", "Message: " + e.getMessage());
 			}
 		});
 
