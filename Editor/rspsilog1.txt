@@ -1,0 +1,37 @@
+Mar 06, 2023 10:32:28 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+Mar 06, 2023 10:32:48 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+Mar 06, 2023 10:32:50 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+Mar 06, 2023 10:32:50 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+Mar 06, 2023 10:32:50 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+Mar 06, 2023 10:32:50 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+Mar 06, 2023 10:32:50 PM javafx.fxml.FXMLLoader$ValueElement processValue
+WARNING: Loading FXML document with JavaFX API of version 9.0.4 by JavaFX runtime of version 8.0.352
+java.lang.ArrayIndexOutOfBoundsException: 16275
+	at com.rspsi.plugin.loader.FloorDefinitionLoaderOSRS.getFloor(FloorDefinitionLoaderOSRS.java:101)
+	at com.jagex.cache.loader.floor.FloorDefinitionLoader.getUnderlay(SourceFile:15)
+	at com.jagex.map.b.a(SourceFile:607)
+	at com.jagex.Client.loadChunks(SourceFile:1298)
+	at com.jagex.Client.method54(SourceFile:1330)
+	at com.jagex.Client.loadNextRegion(SourceFile:835)
+	at com.jagex.Client.pulseGame(SourceFile:1480)
+	at com.jagex.Client.pulse(SourceFile:1386)
+	at com.jagex.Client.run(SourceFile:1862)
+	at java.lang.Thread.run(Thread.java:750)
+java.lang.ArrayIndexOutOfBoundsException: 39501
+	at com.jagex.io.Buffer.readUShort(SourceFile:290)
+	at com.jagex.map.b.a(SourceFile:479)
+	at com.jagex.map.b.a(SourceFile:534)
+	at com.jagex.a.b.c(SourceFile:294)
+	at com.jagex.a.b.e(SourceFile:500)
+	at com.jagex.Client.method54(SourceFile:1320)
+	at com.jagex.Client.loadNextRegion(SourceFile:835)
+	at com.jagex.Client.pulseGame(SourceFile:1480)
+	at com.jagex.Client.pulse(SourceFile:1386)
+	at com.jagex.Client.run(SourceFile:1862)
+	at java.lang.Thread.run(Thread.java:750)

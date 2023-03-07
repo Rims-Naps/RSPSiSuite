@@ -362,6 +362,9 @@ public class MainController {
 
 	@FXML
 	private MenuItem generateStairsBtn;
+
+	@FXML
+	private MenuItem generateStepsBtn;
 	
 	@FXML
 	private VBox root;
@@ -636,6 +639,14 @@ public class MainController {
 		});
 
 		generateStairsBtn.setOnAction(evt -> {
+			try {
+				StepsBuilder.buildStairs();
+			} catch (Exception e) {
+				FXDialogs.showError(application.getStage().getOwner(),"Error while generating steps!", "Message: " + e.getMessage());
+			}
+		});
+
+		generateStepsBtn.setOnAction(evt -> { //load a working cache
 			try {
 				StepsBuilder.buildStairs();
 			} catch (Exception e) {

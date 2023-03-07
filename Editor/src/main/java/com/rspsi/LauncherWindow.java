@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.utils.Lists;
 
 import com.google.common.io.Files;
+import com.google.common.collect.Lists;
+import javafx.collections.FXCollections;
 import com.rspsi.controllers.LauncherController;
 import com.rspsi.controls.WindowControls;
 import com.rspsi.options.Config;
